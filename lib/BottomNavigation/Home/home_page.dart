@@ -179,12 +179,13 @@ DatabaseReference userRef =
       length: tabs.length,
       child: Stack(
         children: <Widget>[
-          TabBarView(
+         userdata.length>0 ?   TabBarView(
             children: <Widget>[
             FollowingTabPage(userdata[0]["Video_Link"], userdata[0]["Video_Name"],userdata[0]["User_Uid"], false),
               FollowingTabPage(userdata[0]["Video_Link"],  userdata[0]["Video_Name"],userdata[0]["User_Uid"], true),
             ],
-          ),
+          ):
+          Text(""),
           SafeArea(
             child: Align(
               alignment: Alignment.topCenter,
