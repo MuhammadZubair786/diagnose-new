@@ -1,331 +1,156 @@
+import 'dart:io';
 import 'package:diagnose/drawer.dart';
 import 'package:diagnose/navbar/nav_bar_2.dart';
 import 'package:flutter/material.dart';
-import 'package:file_manager/file_manager.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_file_manager/flutter_file_manager.dart';
+import 'package:path_provider_ex/path_provider_ex.dart';
+import 'package:permission_handler/permission_handler.dart';
+//import package files
 
-
+//apply this class on home: attribute at MaterialApp()
 class FileMB extends StatefulWidget {
-  const FileMB({Key? key}) : super(key: key);
-
   @override
-  State<FileMB> createState() => _FileMBState();
+  State<StatefulWidget> createState() {
+    return _FileMB();
+  }
 }
 
-class _FileMBState extends State<FileMB> {
+class _FileMB extends State<FileMB> {
+  var files=[];
 
+  // void initState(){
+  //   super.initState();
 
+  // }
+
+  Future<void> handlerpermssion() async {
+    var permission = await Permission.storage;
+
+    if (permission.status == PermissionStatus.granted) {
+      print("Permsiion");
+    } else {
+      await Permission.storage.request();
+
+      getFiles();
+    }
+  }
+
+  void getFiles() async {
+    //asyn function to get list of files
+    List<StorageInfo> storageInfo = await PathProviderEx.getStorageInfo();
+    var root = storageInfo[0]
+        .rootDir; //storageInfo[1] for SD card, geting the root directory
+    var fm = FileManager(root: Directory(root)); //
+    files = await fm.filesTree(
+        //set fm.dirsTree() for directory/folder tree list
+        excludedPaths: [
+          "/storage/emulated/0/Android"
+        ], extensions: [
+      "png",
+      "pdf",
+      "docx"
+    ] //optional, to filter files, remove to list all,
+        //remove this if your are grabbing folder list
+        );
+    print(files);
+    setState(() {}); //update the UI
+  }
+
+  @override
+  void initState() {
+    //call getFiles() function on initial state.
+    super.initState();
+    handlerpermssion();
+  }
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
+     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
-    return Scaffold(
-      drawer: MyDrawer(),
-      bottomNavigationBar: NaviBar(),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leading: Builder(builder: (context) {
-          return IconButton(
-            onPressed: () {
-              Scaffold.of(context).openDrawer();
-            },
-            icon: Positioned(
-              top: 20,
-              child: Icon(
-                Icons.apps,
-                color: Colors.black,
-              ),
-            ),
-          );
-        }),
-      ),
-      body: Container(
-          child: Column(children: [
-        Center(
-            child: Padding(
-                padding: const EdgeInsets.only(top: 30, bottom: 10),
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 20.0),
-                        child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Container(
-                                child: Image.asset(
-                              "assets/icon.png",
-                              height: 30,
-                              width: 30,
-                            ))),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 0.0),
-                        child: Container(
-                            child: Text(
-                          "Files",
-                          style: TextStyle(
-                              fontSize: 25,
-                              fontFamily: 'Roboto',
-                              color: Colors.black,
-                              decoration: TextDecoration.none),
-                        )),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 20.0),
-                        child: Container(
-                            child: Text(
-                          "20",
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontFamily: 'Advent Pro',
-                              color: Colors.black,
-                              decoration: TextDecoration.none),
-                        )),
-                      ),
-                    ]))),
-        SizedBox(
-          height: height * 0.04,
-        ),
-        Container(
-          width: width * 0.9,
-          height: height * 0.07,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(5),
-              topRight: Radius.circular(5),
-              bottomLeft: Radius.circular(5),
-              bottomRight: Radius.circular(5),
-            ),
-            boxShadow: [
-              BoxShadow(
-                  color: Color.fromRGBO(0, 0, 0, 0.25),
-                  offset: Offset(2, 2),
-                  blurRadius: 42)
-            ],
-            color: Color.fromRGBO(255, 255, 255, 1),
-          ),
-          child: Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 10.0),
-                child: Container(
-                    child: Text(
-                  "PDF 12/30/2020",
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontFamily: 'Advent Pro',
-                      color: Colors.black,
-                      decoration: TextDecoration.none,
-                      fontWeight: FontWeight.w600),
-                )),
-              ),
-              SizedBox(
-                width: width * 0.41,
-              ),
-              Container(
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+
+      home: Scaffold(
+        drawer: MyDrawer(),
+        bottomNavigationBar: NaviBar(),
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          leading: Builder(builder: (context) {
+            return IconButton(
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+              icon: Positioned(
+                top: 20,
                 child: Icon(
-                  Icons.check_box,
-                  color: Colors.green,
+                  Icons.apps,
+                  color: Colors.black,
                 ),
               ),
-            ],
-          ),
+            );
+          }),
         ),
-        SizedBox(
-          height: height * 0.02,
-        ),
-        Container(
-          width: width * 0.9,
-          height: height * 0.07,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(5),
-              topRight: Radius.circular(5),
-              bottomLeft: Radius.circular(5),
-              bottomRight: Radius.circular(5),
-            ),
-            boxShadow: [
-              BoxShadow(
-                  color: Color.fromRGBO(0, 0, 0, 0.25),
-                  offset: Offset(2, 2),
-                  blurRadius: 42)
-            ],
-            color: Color.fromRGBO(255, 255, 255, 1),
-          ),
-          child: Row(
+        body:  SingleChildScrollView(
+          child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 10.0),
-                child: Container(
-                    child: Text(
-                  ".txt",
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontFamily: 'Advent Pro',
-                      color: Colors.black,
-                      decoration: TextDecoration.none,
-                      fontWeight: FontWeight.w600),
-                )),
-              ),
-              SizedBox(
-                width: width * 0.67,
-              ),
-              Container(
-                child: Icon(
-                  Icons.check_box,
-                  color: Colors.green,
-                ),
-              ),
+              Center(
+                    child: Padding(
+                        padding: const EdgeInsets.only(top: 30, bottom: 10),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: 20.0),
+                                child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Container(
+                                        child: Image.asset(
+                                      "assets/icon.png",
+                                      height: 30,
+                                      width: 30,
+                                    ))),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 0.0),
+                                child: Container(
+                                    child: Text(
+                                  "Contacts",
+                                  style: TextStyle(
+                                      fontSize: 25,
+                                      fontFamily: 'Roboto',
+                                      color: Colors.black,
+                                      decoration: TextDecoration.none),
+                                )),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 20.0),
+                                child: Container(
+                                    child: files == null
+                                        ? Text("0")
+                                        : Text(files.length.toString(),
+                                            style: TextStyle(fontSize: 20))),
+                              ),
+                            ]))),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: files.length,
+                itemBuilder: (context, index){
+                  return   Makefile(index);
+               
+                }),
             ],
           ),
         ),
-        SizedBox(
-          height: height * 0.02,
-        ),
-        Container(
-          width: width * 0.9,
-          height: height * 0.07,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(5),
-              topRight: Radius.circular(5),
-              bottomLeft: Radius.circular(5),
-              bottomRight: Radius.circular(5),
-            ),
-            boxShadow: [
-              BoxShadow(
-                  color: Color.fromRGBO(0, 0, 0, 0.25),
-                  offset: Offset(2, 2),
-                  blurRadius: 42)
-            ],
-            color: Color.fromRGBO(255, 255, 255, 1),
-          ),
-          child: Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 10.0),
-                child: Container(
-                    child: Text(
-                  "pdf",
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontFamily: 'Advent Pro',
-                      color: Colors.black,
-                      decoration: TextDecoration.none,
-                      fontWeight: FontWeight.w600),
-                )),
-              ),
-              SizedBox(
-                width: width * 0.66,
-              ),
-              Container(
-                child: Icon(
-                  Icons.check_box,
-                  color: Colors.green,
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(
-          height: height * 0.02,
-        ),
-        Container(
-          width: width * 0.9,
-          height: height * 0.07,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(5),
-              topRight: Radius.circular(5),
-              bottomLeft: Radius.circular(5),
-              bottomRight: Radius.circular(5),
-            ),
-            boxShadow: [
-              BoxShadow(
-                  color: Color.fromRGBO(0, 0, 0, 0.25),
-                  offset: Offset(2, 2),
-                  blurRadius: 42)
-            ],
-            color: Color.fromRGBO(255, 255, 255, 1),
-          ),
-          child: Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 10.0),
-                child: Container(
-                    child: Text(
-                  "word",
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontFamily: 'Advent Pro',
-                      color: Colors.black,
-                      decoration: TextDecoration.none,
-                      fontWeight: FontWeight.w600),
-                )),
-              ),
-              SizedBox(
-                width: width * 0.63,
-              ),
-              Container(
-                child: Icon(
-                  Icons.check_box,
-                  color: Colors.green,
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(
-          height: height * 0.02,
-        ),
-        Container(
-          width: width * 0.9,
-          height: height * 0.07,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(5),
-              topRight: Radius.circular(5),
-              bottomLeft: Radius.circular(5),
-              bottomRight: Radius.circular(5),
-            ),
-            boxShadow: [
-              BoxShadow(
-                  color: Color.fromRGBO(0, 0, 0, 0.25),
-                  offset: Offset(2, 2),
-                  blurRadius: 42)
-            ],
-            color: Color.fromRGBO(255, 255, 255, 1),
-          ),
-          child: Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 10.0),
-                child: Container(
-                    child: Text(
-                  "PDF 12/30/2020",
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontFamily: 'Advent Pro',
-                      color: Colors.black,
-                      decoration: TextDecoration.none,
-                      fontWeight: FontWeight.w600),
-                )),
-              ),
-              SizedBox(
-                width: width * 0.41,
-              ),
-              Container(
-                child: Icon(
-                  Icons.check_box,
-                  color: Colors.green,
-                ),
-              ),
-            ],
-          ),
         )
-      ])),
     );
+  }
+
+ Makefile(int index) {
+    return Card(
+      child: Container(child: Text(files[index].path.split('/').last.toString())));
   }
 }

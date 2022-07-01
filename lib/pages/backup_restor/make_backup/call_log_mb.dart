@@ -189,7 +189,17 @@ class _CallLOGMBState extends State<CallLOGMB> {
                           decoration: TextDecoration.none),
                       textAlign: TextAlign.center,
                     )),
-                  ]))),
+                     Padding(
+                              padding: const EdgeInsets.only(left: 80.0),
+                              child: Container(
+                                child:_callLogEntries==null ?Text("0",style: TextStyle(fontSize: 25),): Text(
+                                  _callLogEntries.length.toString(),style: TextStyle(fontSize: 20),
+                                )
+                              ),
+                            ),
+                   
+                  ])
+                  )),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(children: children),

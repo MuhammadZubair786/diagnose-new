@@ -18,6 +18,7 @@ import 'package:workmanager/workmanager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_share/flutter_share.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:archive/archive_io.dart';
 
 class DataBackupLoadingMB extends StatefulWidget {
   var i1;
@@ -62,10 +63,12 @@ class _DataBackupLoadingMBState extends State<DataBackupLoadingMB> {
     locationpermsion();
     _promptPermissionSetting();
     data(); 
-    // chk();
+    // chk1();
 
     // startBackup();
   }
+
+
 
   locationpermsion() async {
     await Nearby().askLocationPermission();
@@ -551,12 +554,6 @@ class _DataBackupLoadingMBState extends State<DataBackupLoadingMB> {
                         }
                       },
                     ),
-                //      ElevatedButton(
-                //   child: Text("Stop Send Device"),
-                //   onPressed: () async {
-                //     await Nearby().stopAdvertising();
-                //   },
-                // ),
                   ],
                 ),
                
@@ -622,12 +619,7 @@ class _DataBackupLoadingMBState extends State<DataBackupLoadingMB> {
                         }
                       },
                     ),
-                //      ElevatedButton(
-                //   child: Text("Stop Recieve Device"),
-                //   onPressed: () async {
-                //     await Nearby().stopDiscovery();
-                //   },
-                // ),
+               
                   ],
                 ),
                

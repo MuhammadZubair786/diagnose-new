@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors, unnecessary_null_comparison, avoid_print
+
 import 'package:diagnose/drawer.dart';
 import 'package:diagnose/navbar/nav_bar_2.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +19,7 @@ class ContactMB extends StatefulWidget {
 class _ContactMBState extends State<ContactMB> {
   List<Contact>? contacts;
   final LocalStorage storage = LocalStorage("Localstorage_app");
+  var contactlist = [];
 
   var value1 = false;
   @override
@@ -40,8 +43,6 @@ class _ContactMBState extends State<ContactMB> {
           withProperties: true, withPhoto: true);
       // print(contacts);
 
-      var contactlist = [];
-
       for (var i = 0; i < 100; i++) {
         // print(contacts![i].phones.first.number);
 
@@ -49,16 +50,18 @@ class _ContactMBState extends State<ContactMB> {
           var username = contacts![i].name.first + contacts![i].name.last;
           var number = contacts![i].phones.first.number;
 
-          if (username == "" || username == null) {
+          if (username == "") {
             username = "user";
           }
-          if (number == "" || number == null) {
+          if (number == "") {
             number = "no number";
           }
 
-          contactlist.add({"name": username, "number": number});
+          contactlist
+              .add({"name": username, "number": number, "isCheck": false});
         }
       }
+      print(contactlist);
       await storage.setItem('Contact', contactlist);
 
       setState(() {});
@@ -127,11 +130,10 @@ class _ContactMBState extends State<ContactMB> {
                             Padding(
                               padding: const EdgeInsets.only(right: 20.0),
                               child: Container(
-                                child: Icon(
-                                  Icons.check_box,
-                                  color: Colors.green,
-                                ),
-                              ),
+                                  child: contacts == null
+                                      ? Text("0")
+                                      : Text(contacts!.length.toString(),
+                                          style: TextStyle(fontSize: 20))),
                             ),
                           ]))),
               SizedBox(
@@ -142,9 +144,8 @@ class _ContactMBState extends State<ContactMB> {
                   : ListView.builder(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
-                      itemCount: contacts!.length,
+                      itemCount: contactlist.length,
                       itemBuilder: (BuildContext context, int index) {
-                        // print(contacts![index].phones.first.number);
                         var username = contacts![index].name.first +
                             contacts![index].name.last;
                         var ischeck = false;
@@ -206,49 +207,50 @@ class _ContactMBState extends State<ContactMB> {
                             //       ),
                             //     ],
                             //   ),
-                            ListTile(
-                          leading: contacts![index].name.first == null
-                              ? Text(
-                                  "User",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                )
-                              : username.length > 15
-                                  ? Text(
-                                      username.substring(
-                                          0, username.length - 5),
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold))
-                                  : Text(username,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold)),
-
-                          // title: ,
-                          title: Center(
-                              child:
-                                  contacts![index].phones.first.number == null
-                                      ? Text("No number ")
-                                      : Text(
-                                          '${contacts![index].phones.first.number}',
-                                        )),
-                          trailing: Checkbox(
-                            value: ischeck,
-                            activeColor: Colors.green,
-                            checkColor: Colors.white,
-                            onChanged: (value) {
-                              setState(() {
-                                ischeck = value!;
-                                print(value);
-                              });
-                            },
-                          ),
-                          // trailing:   entry.callType== CallType.missed ?   Icon(Icons.phone_callback,color: Colors.red,):
-                          // Icon(Icons.phone_callback,color: Colors.green,),
-                        );
+                            MakeConatctList(
+                                index, username, contactlist[index]["isCheck"]);
                       })
             ],
           ),
         ),
       ),
     );
+  }
+
+  ListTile MakeConatctList(int index, String username, bool ischeck) {
+    return ListTile(
+        leading: contacts![index].name.first == null
+            ? const Text(
+                "User",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              )
+            : username.length > 15
+                ? Text(username.substring(0, username.length - 5),
+                    style: const TextStyle(fontWeight: FontWeight.bold))
+                : Text(username, style: TextStyle(fontWeight: FontWeight.bold)),
+
+        // title: ,
+        title: Center(
+            child: contacts![index].phones.first.number == null
+                ? Text("No number ")
+                : Text(
+                    contacts![index].phones.first.number,
+                  )),
+        trailing: ischeck
+            ? Icon(
+                Icons.check_box,
+                color: Colors.green[700],
+              )
+            : Icon(
+                Icons.check_box_outline_blank,
+                color: Colors.grey,
+              ),
+        onTap: () {
+          setState(() {
+            contactlist[index]["isCheck"] = !contactlist[index]["isCheck"];
+          });
+        }
+        // Icon(Icons.phone_callback,color: Colors.green,),
+        );
   }
 }
