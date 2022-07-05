@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "787651510402",
+    "project_id": "diagnose-app-3ae88",
+    "storage_bucket": "diagnose-app-3ae88.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:787651510402:android:2e461ca35eb66fd786f49b",
+        "android_client_info": {
+          "package_name": "com.example.diagnose"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "787651510402-nml21aa742mo5l6h6jh9516uh3fk4667.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.diagnose",
+            "certificate_hash": "f489d8345879ecb6b35acf68a551782dcd743d1a"
+          }
+        },
+        {
+          "client_id": "787651510402-44p81p4564f26glq4vopcjhc5qgrou1d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRFPD0tJSaHsD5N4Wnqlbhp-RVKN7shUg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "787651510402-44p81p4564f26glq4vopcjhc5qgrou1d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
