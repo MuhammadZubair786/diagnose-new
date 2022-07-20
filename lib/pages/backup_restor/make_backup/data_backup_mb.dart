@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:diagnose/navbar/nav_bar_2.dart';
 import 'package:diagnose/pages/backup_restor/backup_loading.dart';
 import 'package:diagnose/pages/backup_restor/make_backup/appdata_mb.dart';
@@ -6,6 +8,7 @@ import 'package:diagnose/pages/backup_restor/make_backup/contacts_mb.dart';
 import 'package:diagnose/pages/backup_restor/make_backup/file_mb.dart';
 import 'package:diagnose/pages/backup_restor/make_backup/image_videos_mb.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class DataBackupMB extends StatefulWidget {
   const DataBackupMB({Key? key}) : super(key: key);
@@ -20,6 +23,71 @@ class _DataBackupMBState extends State<DataBackupMB> {
   bool value2 = false;
   bool value3 = false;
   bool value4 = false;
+
+  void initState() {
+    super.initState();
+
+    imagespermission();
+    
+    
+    callspermission();
+  }
+
+  imagespermission() async {
+    await _promptPermissionSetting();
+    await filespermission();
+  }
+
+  Future<bool> _promptPermissionSetting() async {
+    if (Platform.isIOS &&
+            await Permission.storage.request().isGranted &&
+            await Permission.photos.request().isGranted ||
+        Platform.isAndroid && await Permission.storage.request().isGranted) {
+      return true;
+    }
+    return false;
+  }
+
+  filespermission() async {
+    await handlerpermssion();
+  }
+
+  Future<void> handlerpermssion() async {
+    var permission = await Permission.storage;
+    print("objectPER");
+
+    if (permission.status == PermissionStatus.granted) {
+      print("Permsiion");
+      await contactspermission();
+    } else {
+      await Permission.storage.request();
+    await contactspermission();
+    
+    }
+  }
+
+  contactspermission() async {
+
+    await getContact();
+  }
+
+    getContact() async {
+    await Permission.contacts.request();
+
+    final PermissionStatus permission = await Permission.contacts.status;
+    print("permission :" + permission.toString());
+
+    if (permission.isDenied) {
+      print("permission :" + permission.toString());
+      Permission.contacts.request();
+    } else if (permission.isGranted) {
+      print("Permission granted");
+    }
+  }
+
+  callspermission() {
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -191,7 +259,7 @@ class _DataBackupMBState extends State<DataBackupMB> {
                       // ),
                       Checkbox(
                         value: value,
-                         activeColor: Colors.green,
+                        activeColor: Colors.green,
                         checkColor: Colors.white,
                         onChanged: (value) {
                           setState(() {
@@ -261,7 +329,7 @@ class _DataBackupMBState extends State<DataBackupMB> {
                       // ),
                       Checkbox(
                         value: value1,
-                         activeColor: Colors.green,
+                        activeColor: Colors.green,
                         checkColor: Colors.white,
                         onChanged: (value) {
                           setState(() {
@@ -327,7 +395,7 @@ class _DataBackupMBState extends State<DataBackupMB> {
                       ),
                       Checkbox(
                         value: value2,
-                         activeColor: Colors.green,
+                        activeColor: Colors.green,
                         checkColor: Colors.white,
                         onChanged: (value) {
                           setState(() {
@@ -393,7 +461,7 @@ class _DataBackupMBState extends State<DataBackupMB> {
                       ),
                       Checkbox(
                         value: value3,
-                         activeColor: Colors.green,
+                        activeColor: Colors.green,
                         checkColor: Colors.white,
                         onChanged: (value) {
                           setState(() {
@@ -505,7 +573,8 @@ class _DataBackupMBState extends State<DataBackupMB> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => DataBackupLoadingMB(value,value1,value2,value3,value4),
+                          builder: (context) => DataBackupLoadingMB(
+                              value, value1, value2, value3, value4),
                         ));
                   },
                   child: const Text(

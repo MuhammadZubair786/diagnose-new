@@ -1,8 +1,12 @@
+import 'dart:io';
+
+import 'package:archive/archive_io.dart';
 import 'package:diagnose/drawer.dart';
 import 'package:diagnose/navbar/nav_bar_2.dart';
 import 'package:flutter/material.dart';
 import 'package:call_log/call_log.dart';
 import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:workmanager/workmanager.dart';
 import 'package:localstorage/localstorage.dart';
 
@@ -74,6 +78,16 @@ class _CallLOGMBState extends State<CallLOGMB> {
 
       await storage.setItem("Call_Log", item);
     }
+    // Directory? appDocDirectory = await getExternalStorageDirectory();
+
+    // print(appDocDirectory?.path);
+
+    // var file = File(appDocDirectory!.path + "/calldata.txt");
+    // print(file);
+
+    // await file.writeAsString(item.toString());
+    // print(file);
+    
   }
 
   @override
@@ -189,17 +203,20 @@ class _CallLOGMBState extends State<CallLOGMB> {
                           decoration: TextDecoration.none),
                       textAlign: TextAlign.center,
                     )),
-                     Padding(
-                              padding: const EdgeInsets.only(left: 80.0),
-                              child: Container(
-                                child:_callLogEntries==null ?Text("0",style: TextStyle(fontSize: 25),): Text(
-                                  _callLogEntries.length.toString(),style: TextStyle(fontSize: 20),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 80.0),
+                      child: Container(
+                          child: _callLogEntries == null
+                              ? Text(
+                                  "0",
+                                  style: TextStyle(fontSize: 25),
                                 )
-                              ),
-                            ),
-                   
-                  ])
-                  )),
+                              : Text(
+                                  _callLogEntries.length.toString(),
+                                  style: TextStyle(fontSize: 20),
+                                )),
+                    ),
+                  ]))),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(children: children),

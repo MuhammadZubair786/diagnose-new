@@ -7,7 +7,8 @@ import 'package:diagnose/pages/setting.dart';
 import 'package:diagnose/pages/wish_list.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:molten_navigationbar_flutter/molten_navigationbar_flutter.dart';
+import 'package:molten_navigationbar_flutter/molten_navigationbar%20(1).dart';
+
 class BottomNavbar extends StatefulWidget {
   const BottomNavbar({Key? key}) : super(key: key);
 

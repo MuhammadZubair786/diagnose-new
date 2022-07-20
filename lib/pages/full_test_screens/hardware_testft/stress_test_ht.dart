@@ -878,6 +878,7 @@ class _StressTestHTState extends State<StressTestHT> {
                 future: InstalledApps.getInstalledApps(true, true),
                 builder: (BuildContext buildContext,
                     AsyncSnapshot<List<AppInfo>> snapshot) {
+                      // print(snapshot.data);
                   return snapshot.connectionState == ConnectionState.done
                       ? snapshot.hasData
                           ? ListView.builder(
@@ -885,6 +886,13 @@ class _StressTestHTState extends State<StressTestHT> {
                               physics: const NeverScrollableScrollPhysics(),
                               itemCount: snapshot.data!.length,
                               itemBuilder: (context, index) {
+                                print(snapshot.data![index].name);
+                                print(snapshot.data![index].packageName);
+                                print(snapshot.data![index].icon);
+                                print(snapshot.data![index].getVersionInfo());
+
+
+
                                 AppInfo app = snapshot.data![index];
                                 return Row(
                                   mainAxisAlignment: MainAxisAlignment.center,

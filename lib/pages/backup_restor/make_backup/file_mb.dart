@@ -24,14 +24,11 @@ class FileMB extends StatefulWidget {
 class _FileMB extends State<FileMB> {
   var files = [];
 
-
 //  Future<Directory?> appDocDirectory = getExternalStorageDirectory();
 //     // print(appDocDirectory);
 //     var encoder = ZipFileEncoder();
-    
-    // encoder.create(appDocDirectory!.path + "/" + 'jay.zip');
 
-
+  // encoder.create(appDocDirectory!.path + "/" + 'jay.zip');
 
   // void initState(){
   //   super.initState();
@@ -39,16 +36,20 @@ class _FileMB extends State<FileMB> {
   // }
 
   Future<void> handlerpermssion() async {
-    var permission = await Permission.storage;
-
-    if (permission.status == PermissionStatus.granted) {
+    var permission = await Permission.storage ;
+    print("objectPER");
+    // print(permission.status.isGranted);
+    if (permission.status == PermissionStatus.granted ) {
       print("Permsiion");
       getFiles();
     } else {
       await Permission.storage.request();
+      
+
 
       getFiles();
     }
+    // bool permission = await requestPermissionHelper(Permission.manageExternalStorage);
   }
 
   void getFiles() async {
@@ -58,60 +59,65 @@ class _FileMB extends State<FileMB> {
         .rootDir; //storageInfo[1] for SD card, geting the root directory
     var fm = FileManager(root: Directory(root));
 
-    print(fm); 
+    print(fm);
 
     files = await fm.filesTree(
         //set fm.dirsTree() for directory/folder tree list
-        excludedPaths: [
-          "/storage/emulated/0/Android"
-        ], extensions: [
-      // "png",
-      "pdf",
-      // "docx"
-    ] 
-        );
+        excludedPaths: ["/storage/emulated/0/Android"],
+        extensions: ["fig", "pdf", "docx"]);
     print(files[0].runtimeType);
-    Directory? appDocDirectory = await getExternalStorageDirectory();
-    print(appDocDirectory);
-    var encoder = ZipFileEncoder();
-    // encoder.create(appDocDirectory!.path + "/" + 'newFile.zip');
-     encoder.open(appDocDirectory!.path + "/" + 'newFile.zip');
-
-    
-
-
-     setState(() {
-      
-    });
+    // Directory? appDocDirectory = await getExternalStorageDirectory();
+    // print(appDocDirectory);
+    // var encoder = ZipFileEncoder();
+    // // encoder.create(appDocDirectory!.path + "/" + 'newFile.zip');
+    // encoder.open(appDocDirectory!.path + "/" + 'file.zip');
+    // setState(() {});
     // }
-   await encoder.addFile(files[10]);
-   await  encoder.addFile(files[1]);
-  await  encoder.addFile(files[2]);
-  await    encoder.addFile(files[3]);
-    await encoder.addFile(files[4]);
-   await  encoder.addFile(files[5]);
-   await  encoder.addFile(files[6]);
-   await   encoder.addFile(files[7]);
-  await  encoder.addFile(files[8]);
-   await encoder.addFile(files[9]);
-    encoder.addFile(files[0]);
-    encoder.addFile(files[11]);
-    encoder.addFile(files[12]);
-     encoder.addFile(files[13]);
-    encoder.addFile(files[14]);
-    encoder.addFile(files[15]);
-    encoder.addFile(files[16]);
-     encoder.addFile(files[17]);
-    encoder.addFile(files[18]);
-     encoder.addFile(files[19]);
-    encoder.addFile(files[20]);
-   
-    
 
-   
+    // for (var i = 0; i < files.length; i++) {
+    //   try {
+    //     await encoder.addFile(files[i]);
+    //   } catch (E) {
+    //     // ignore: avoid_print
+    //     print(E.toString());
+    //   }
+    // }
 
-    encoder.close();
- 
+    //  await  encoder.addFile(files[1]);
+    // await  encoder.addFile(files[2]);
+    // await    encoder.addFile(files[3]);
+    //   await encoder.addFile(files[4]);
+    //  await  encoder.addFile(files[5]);
+    //  await  encoder.addFile(files[6]);
+    //  await   encoder.addFile(files[7]);
+    // await  encoder.addFile(files[8]);
+//    await encoder.addFile(files[9]);
+//    await encoder.addFile(files[0]);
+//   await  encoder.addFile(files[11]);
+//   await  encoder.addFile(files[12]);
+//   await   encoder.addFile(files[13]);
+//   await  encoder.addFile(files[14]);
+//   await  encoder.addFile(files[15]);
+//   await  encoder.addFile(files[16]);
+//   await   encoder.addFile(files[17]);
+//  await   encoder.addFile(files[18]);
+//    await  encoder.addFile(files[19]);
+//   await  encoder.addFile(files[20]);
+//    await  encoder.addFile(files[21]);
+//     await  encoder.addFile(files[22]);
+//      await  encoder.addFile(files[23]);
+//       await  encoder.addFile(files[24]);
+//       await  encoder.addFile(files[25]);
+//     await   encoder.addFile(files[26]);
+//    await  encoder.addFile(files[27]);
+//   await  encoder.addFile(files[28]);
+//    await  encoder.addFile(files[29]);
+//     await  encoder.addFile(files[30]);
+//      await  encoder.addFile(files[31]);
+//       await  encoder.addFile(files[32]);
+//       await  encoder.addFile(files[33]);
+
+    // encoder.close();
   }
 
   @override
@@ -173,7 +179,6 @@ class _FileMB extends State<FileMB> {
                                 padding: const EdgeInsets.only(left: 0.0),
                                 // ignore: avoid_unnecessary_containers
                                 child: Container(
-                                  
                                     child: Text(
                                   "Files",
                                   style: TextStyle(
@@ -197,14 +202,10 @@ class _FileMB extends State<FileMB> {
                     physics: NeverScrollableScrollPhysics(),
                     itemCount: files.length,
                     itemBuilder: (context, index) {
-                      return
-                      Column(
-                        children : [
-                       Makefile(index),
-                       Divider(),
-                       
-                       ]);
-                        
+                      return Column(children: [
+                        Makefile(index),
+                        Divider(),
+                      ]);
                     }),
               ],
             ),
@@ -212,36 +213,32 @@ class _FileMB extends State<FileMB> {
         ));
   }
 
-
   Makefile(int index) {
     return ListTile(
-      leading:Text(files[index].path.split('/').last.toString()),
+      leading: Text(files[index].path.split('/').last.toString()),
       // ignore: prefer_const_constructors
       trailing: GestureDetector(
-        onTap: (){
+        onTap: () {
           getfile(files[index]);
         },
         child: Icon(
-                  Icons.check_box_outline_blank,
-                  color: Colors.grey,
-                ),
+          Icons.check_box_outline_blank,
+          color: Colors.grey,
+        ),
       ),
-      
-      );
+    );
   }
-  
-   getfile(var chk) async {
+
+  getfile(var chk) async {
     print(chk);
-    
-    // files.forEach((element) async { 
+
+    // files.forEach((element) async {
     //   var data = await encoder.addFile(files[files[element]]);
     //   print(element);
-      
 
     // });
 
     // var data = encoder.addFile(chk);
     // print(data);
-
   }
 }

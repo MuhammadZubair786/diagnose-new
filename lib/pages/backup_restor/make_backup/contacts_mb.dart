@@ -1,11 +1,15 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_null_comparison, avoid_print
 
+import 'dart:io';
+
+import 'package:archive/archive_io.dart';
 import 'package:diagnose/drawer.dart';
 import 'package:diagnose/navbar/nav_bar_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:localstorage/localstorage.dart';
 
@@ -62,9 +66,19 @@ class _ContactMBState extends State<ContactMB> {
         }
       }
       print(contactlist);
-      await storage.setItem('Contact', contactlist);
 
-      setState(() {});
+      // Directory? appDocDirectory = await getExternalStorageDirectory();
+
+      // print(appDocDirectory?.path);
+
+      // var file = File(appDocDirectory!.path + "/contactdata.txt");
+      // print(file);
+
+      // await file.writeAsString(contactlist.toString());
+      // print(file);
+
+      // await storage.setItem('Contact', contactlist);
+      // setState(() {});
     }
   }
 

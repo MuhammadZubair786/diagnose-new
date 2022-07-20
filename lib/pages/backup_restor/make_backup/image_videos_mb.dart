@@ -1,26 +1,20 @@
-// ignore_for_file: prefer_const_constructors
-
-import 'dart:convert';
 import 'dart:io';
+import 'dart:async';
 import 'dart:typed_data';
-import 'package:photo_manager/photo_manager.dart';
-
+import 'package:archive/archive_io.dart';
 import 'package:diagnose/drawer.dart';
 import 'package:diagnose/navbar/nav_bar_2.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_image_gallery/flutter_image_gallery.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_gallery/photo_gallery.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:video_player/video_player.dart';
-import "package:localstorage/localstorage.dart";
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ImageVideosMB extends StatefulWidget {
   const ImageVideosMB({Key? key}) : super(key: key);
-  
-  
 
   @override
   State<ImageVideosMB> createState() => _ImageVideosMBState();
@@ -29,18 +23,6 @@ class ImageVideosMB extends StatefulWidget {
 class _ImageVideosMBState extends State<ImageVideosMB> {
   List<Album>? _albums;
   bool _loading = false;
-  
-    List<AssetEntity> assets = [];
-
-
-    Future<Uint8List> get thumbData {
-      // TODO: implement thumbData
-      throw UnimplementedError();
-    }
-    
-
-  final LocalStorage storage = LocalStorage("Localstorage_app");
-  
 
   @override
   void initState() {
@@ -49,87 +31,41 @@ class _ImageVideosMBState extends State<ImageVideosMB> {
     initAsync();
   }
 
-initAsync() async {
+  Future<void> initAsync() async {
     if (await _promptPermissionSetting()) {
+      List<Album> albums =
+          await PhotoGallery.listAlbums(mediumType: MediumType.image);
 
-      
+      var allImageTemp;
+      allImageTemp = await FlutterImageGallery.getAllImages;
 
-        final albums = await PhotoManager.getAssetPathList(onlyAll: true);
-  final recentAlbum = albums.first;
-  print(recentAlbum);
-  final recentAssets = await recentAlbum.getAssetListRange(
-    start: 0, // start at index 0
-    end: 1000000, // end at a very big index (to get all the assets)
-  );
-  setState(() {
-    assets=recentAssets;
-       _loading = false;
-  });
+      var allImage = allImageTemp['URIList'] as List;
+      print(allImage);
 
-  // print(recentAssets);
-//       List<Album> albums =
-//           await PhotoGallery.listAlbums(mediumType: MediumType.image);
-//     final Medium medium = await PhotoGallery.getMedium(
-//   mediumId: "10", 
-// );
+      List albmain = [];
 
-//       print(medium);
+      setState(() {
+        _albums = albums;
+        _loading = false;
+      });
 
-//       // print(albums);
-//       setState(() {
-//         _albums = albums;
-//         _loading = false;
-//       });
+      // Directory? appDocDirectory = await getExternalStorageDirectory();
+      // print(appDocDirectory);
+      // print("object");
+      // var encoder = ZipFileEncoder();
+      // encoder.create(appDocDirectory!.path + "/" + 'imagegallery.zip');
+      // encoder.open(appDocDirectory!.path + "/" + 'newimages.zip');
 
-      // var mediadata;
-
-      // for (var i = 0; i < albums.length; i++) {
-      //   MediaPage mediaPage = await albums[i].listMedia();
-      //   mediadata = mediaPage.items;
+      // for (var i = 0; i < 60; i++) {
+      //   var imgfile = File(allImage[i]);
+      //   print(imgfile.runtimeType);
+      //   await encoder.addFile(imgfile);
       // }
-
-      // mediadata as List;
-      // for (var i = 0; i < mediadata.length; i++) {
-      //   print(mediadata[i]
-      //       .toString()
-      //       .substring(6, mediadata[i].toString().length));
-      //   var data = mediadata[i]
-      //       .toString()
-      //       .substring(6, mediadata[i].toString().length);
-      //   print(data);
-      //   await FirebaseFirestore.instance
-      //       .collection("Data Store")
-      //       .doc()
-      //       .collection("Backup")
-      //       .doc(i.toString())
-      //       .set({"images": data});
-      // }
-
-      //
-      // storage.setItem("Image_Albums",  mediadata as List);
-
-      //  MediaPage mediaPage = await albums.listMedia();
-
-      // for(var i=0;i<1;i++){
-      //   // albums as Map;
-      //   // print(albums[i].mediumType);
-      //   // print(albums[i].id);
-      //   // print(albums[i].count);
-      //   // print(albums[i].name);
-      //   // var obj={
-      //   //   "Albums":albums[i].mediumType,
-      //   //   "Count":albums[i].count,
-
-      //   // };
-
-      // //
-
-      // }
+      // encoder.close();
     }
     setState(() {
       _loading = false;
     });
-    return assets;
   }
 
   Future<bool> _promptPermissionSetting() async {
@@ -184,101 +120,83 @@ initAsync() async {
           )
         ],
       ),
-      body:
-       FutureBuilder<Uint8List>(
-      future: initAsync(),
-      builder: (_, snapshot) {
-        final bytes = snapshot.data;
-        // print(bytes);
-        // If we have no data, display a spinner
-        if (bytes == null) return CircularProgressIndicator();
-        // If there's data, display it as an image
-        return Image.memory(bytes);
-      },
-    )
+      body: _loading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                double gridWidth = (constraints.maxWidth - 20) / 3;
+                double gridHeight = gridWidth + 33;
+                double ratio = gridWidth / gridHeight;
+                return Container(
+                  padding: EdgeInsets.all(5),
+                  child: GridView.count(
+                    childAspectRatio: ratio,
+                    crossAxisCount: 3,
+                    mainAxisSpacing: 5.0,
+                    crossAxisSpacing: 5.0,
+                    children: <Widget>[
+                      ...?_albums?.map(
+                        (album) => GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => AlbumPage(album)));
+                          },
+                          child: Column(
+                            children: <Widget>[
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(5.0),
+                                child: Container(
+                                  color: Colors.grey[300],
+                                  height: gridWidth,
+                                  width: gridWidth,
+                                  child: FadeInImage(
+                                    fit: BoxFit.cover,
+                                    placeholder: MemoryImage(kTransparentImage),
+                                    image: AlbumThumbnailProvider(
+                                      albumId: album.id,
+                                      mediumType: album.mediumType,
+                                      highQuality: true,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                alignment: Alignment.topLeft,
+                                padding: EdgeInsets.only(left: 2.0),
+                                child: Text(
+                                  album.name ?? "Unnamed Album",
+                                  maxLines: 1,
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    height: 1.2,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                alignment: Alignment.topLeft,
+                                padding: EdgeInsets.only(left: 2.0),
+                                child: Text(
+                                  album.count.toString(),
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    height: 1.2,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
     );
-      // FutureBuilder(
-      //   future:,
-      //   builder: (context,),
-      // )
-      //  _loading
-      //     ? Center(
-      //         child: CircularProgressIndicator(),
-      //       )
-      //     : LayoutBuilder(
-      //         builder: (context, constraints) {
-      //           print(assets.length);
-      //           double gridWidth = (constraints.maxWidth - 20) / 3;
-      //           double gridHeight = gridWidth + 33;
-      //           double ratio = gridWidth / gridHeight;
-      //           return Container(
-      //             padding: EdgeInsets.all(5),
-      //             child: GridView.count(
-      //               childAspectRatio: ratio,
-      //               crossAxisCount: 3,
-      //               mainAxisSpacing: 5.0,
-      //               crossAxisSpacing: 5.0,
-      //               children: <Widget>[
-      //                 ...?_albums?.map(
-      //                   (album) => GestureDetector(
-      //                     onTap: () {
-      //                       Navigator.of(context).push(MaterialPageRoute(
-      //                           builder: (context) => AlbumPage(album)));
-      //                     },
-      //                     child: Column(
-      //                       children: <Widget>[
-      //                         ClipRRect(
-      //                           borderRadius: BorderRadius.circular(5.0),
-      //                           child: Container(
-      //                             color: Colors.grey[300],
-      //                             height: gridWidth,
-      //                             width: gridWidth,
-      //                             child: FadeInImage(
-      //                               fit: BoxFit.cover,
-      //                               placeholder: MemoryImage(kTransparentImage),
-      //                               image: AlbumThumbnailProvider(
-      //                                 albumId: album.id,
-      //                                 mediumType: album.mediumType,
-      //                                 highQuality: true,
-      //                               ),
-      //                             ),
-      //                           ),
-      //                         ),
-      //                         Container(
-      //                           alignment: Alignment.topLeft,
-      //                           padding: EdgeInsets.only(left: 2.0),
-      //                           child: Text(
-      //                             album.name ?? "Unnamed Album",
-      //                             maxLines: 1,
-      //                             textAlign: TextAlign.start,
-      //                             style: TextStyle(
-      //                               height: 1.2,
-      //                               fontSize: 16,
-      //                             ),
-      //                           ),
-      //                         ),
-      //                         Container(
-      //                           alignment: Alignment.topLeft,
-      //                           padding: EdgeInsets.only(left: 2.0),
-      //                           child: Text(
-      //                             album.count.toString(),
-      //                             textAlign: TextAlign.start,
-      //                             style: TextStyle(
-      //                               height: 1.2,
-      //                               fontSize: 12,
-      //                             ),
-      //                           ),
-      //                         ),
-      //                       ],
-      //                     ),
-      //                   ),
-      //                 ),
-      //               ],
-      //             ),
-      //           );
-      //         },
-      //       ),
-   
   }
 }
 

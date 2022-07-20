@@ -4,7 +4,9 @@
 
 import 'package:diagnose/navbar/navb.dart';
 import 'package:flutter/material.dart';
-import 'package:molten_navigationbar_flutter/molten_navigationbar_flutter.dart';
+import 'package:molten_navigationbar_flutter/molten_navigationbar%20(1).dart';
+
+
 
 
 class NaviBar extends StatefulWidget {
